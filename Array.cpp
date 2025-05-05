@@ -80,7 +80,9 @@ public:
 
     //logic operators...
 
-    double operator[](int index) {
+    double operator[](int index) const {
+        if(index < 0 || index >= size)
+            throw std::out_of_range("Inedx out of bound");
         return arr[index];
     }
 
@@ -139,6 +141,40 @@ public:
         return *this;
     }
 
+    Array operator+(const Array& array) const {
+        double *newarr = new double[size + array.size];
+
+        for(int i = 0; i < size; i++) {
+            newarr[i] = arr[i];
+        }
+        for(int i = 0; i < array.size; i++) {
+            newarr[i + size] = array.arr[i];
+        }
+
+        Array temp(newarr, size + array.size);
+        delete[] newarr;
+        return temp;
+    }
+
+    Array& operator+=(const Array& array) {
+        if(array.size != 0) {
+            double* newarr = new double[size + array.size];
+
+            for(int i = 0; i < size; i++) {
+                newarr[i] = arr[i];
+            }
+            for(int i = 0; i < array.size; i++) {
+                newarr[i + size] = array.arr[i];
+            }
+
+            delete[] arr;
+            arr = newarr;
+            size += array.size; 
+        }
+        
+        return *this;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const Array& array) {
         os << "[";
 
@@ -155,17 +191,3 @@ public:
         delete[] arr;
     }
 };
-
-int main() {
-    double array0[] = {1, 2, 4};
-    double array1[] = {2, 3, 5, 6};
-    Array arr0(array0, 3);
-    Array arr1(array1, 4);
-
-    arr0 = arr1;
-
-    arr0.push(8);
-    std::cout << arr1;
-
-    return 0;
-}
